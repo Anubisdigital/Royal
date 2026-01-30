@@ -1,0 +1,1661 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royal Glasses - Glass Collection</title>
+    <link rel="icon" type="image/png" href="glass.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Import Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+        import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+        
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfRrEsA2tPm0Be6wTjg8HQawoDewlPnzo",
+            authDomain: "anubis5.firebaseapp.com",
+            projectId: "anubis5",
+            storageBucket: "anubis5.firebasestorage.app",
+            messagingSenderId: "659058130082",
+            appId: "1:659058130082:web:fad0f6936f8e943a27abfb",
+            measurementId: "G-25NK49LZ9X"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Make Firebase available globally for gallery functions
+        window.firebaseApp = app;
+        window.firebaseDB = db;
+        window.firebaseModules = { collection, query, orderBy, onSnapshot };
+    </script>
+    <style>
+        :root {
+            --primary-black: #000000;
+            --dark-gray: #333333;
+            --medium-gray: #666666;
+            --light-gray: #f5f5f5;
+            --white: #FFFFFF;
+            --glass-white: rgba(255, 255, 255, 0.9);
+            --accent: #000000;
+            --border-radius: 10px;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+            --glass-border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            line-height: 1.6;
+            color: var(--primary-black);
+            background-color: var(--white);
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 10px;
+            font-weight: 600;
+        }
+
+        h2:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 70px;
+            height: 3px;
+            background: var(--primary-black);
+            border-radius: 2px;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header & Navigation */
+        header {
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: var(--glass-border);
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-img {
+            height: 50px;
+            width: auto;
+            filter: invert(0);
+        }
+
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            color: var(--primary-black);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .logo-text span {
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        /* Main Navigation */
+        .main-nav {
+            display: flex;
+            list-style: none;
+        }
+
+        .main-nav li {
+            margin-left: 30px;
+        }
+
+        .main-nav li a {
+            text-decoration: none;
+            color: var(--dark-gray);
+            font-weight: 500;
+            font-size: 1rem;
+            transition: var(--transition);
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .main-nav li a:hover {
+            color: var(--primary-black);
+        }
+
+        .main-nav li a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: var(--primary-black);
+            left: 0;
+            bottom: 0;
+            transition: var(--transition);
+        }
+
+        .main-nav li a:hover:after {
+            width: 100%;
+        }
+
+        .main-nav li a.active {
+            color: var(--primary-black);
+            font-weight: 600;
+        }
+
+        .main-nav li a.active:after {
+            width: 100%;
+        }
+
+        /* Mobile Navigation */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary-black);
+            cursor: pointer;
+            padding: 5px;
+            z-index: 1001;
+        }
+
+        .mobile-menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1999;
+        }
+
+        .mobile-menu-content {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 320px;
+            height: 100%;
+            background: var(--white);
+            z-index: 2000;
+            padding: 40px 25px;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
+            overflow-y: auto;
+        }
+
+        .mobile-menu-content.active {
+            right: 0;
+        }
+
+        .mobile-menu-overlay.active {
+            display: block;
+        }
+
+        .mobile-menu-close {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary-black);
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .mobile-menu-close:hover {
+            background: var(--light-gray);
+        }
+
+        .mobile-nav {
+            list-style: none;
+            margin-top: 40px;
+        }
+
+        .mobile-nav li {
+            margin-bottom: 20px;
+        }
+
+        .mobile-nav li a {
+            text-decoration: none;
+            color: var(--dark-gray);
+            font-weight: 600;
+            font-size: 1.2rem;
+            transition: var(--transition);
+            display: block;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .mobile-nav li a:hover {
+            color: var(--primary-black);
+            padding-left: 10px;
+            border-bottom-color: var(--primary-black);
+        }
+
+        /* Gallery Header */
+        .gallery-header {
+            background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
+            color: var(--primary-black);
+            padding: 80px 0 60px;
+            text-align: center;
+            border-bottom: var(--glass-border);
+        }
+
+        .gallery-header h1 {
+            color: var(--primary-black);
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .gallery-header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            color: var(--medium-gray);
+            line-height: 1.8;
+        }
+
+        .store-info {
+            background: var(--light-gray);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            max-width: 900px;
+            margin: 30px auto 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            border: var(--glass-border);
+            backdrop-filter: blur(10px);
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            transition: var(--transition);
+            border-radius: 8px;
+        }
+
+        .info-item:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .info-item i {
+            color: var(--primary-black);
+            font-size: 1.3rem;
+            min-width: 30px;
+        }
+
+        .info-item span {
+            color: var(--dark-gray);
+            font-weight: 500;
+        }
+
+        .category-filter {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 40px;
+        }
+
+        .category-btn {
+            background: transparent;
+            color: var(--primary-black);
+            border: 2px solid rgba(0, 0, 0, 0.2);
+            padding: 12px 28px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
+
+        .category-btn:hover, .category-btn.active {
+            background: var(--primary-black);
+            color: var(--white);
+            transform: translateY(-3px);
+            border-color: var(--primary-black);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Gallery Categories */
+        .gallery-categories {
+            padding: 80px 0;
+            background-color: var(--white);
+        }
+
+        .category-section {
+            margin-bottom: 80px;
+            background-color: var(--white);
+            padding: 50px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border: var(--glass-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-section:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--primary-black);
+        }
+
+        .category-header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .category-header h2 {
+            color: var(--primary-black);
+        }
+
+        .category-header p {
+            color: var(--medium-gray);
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 15px auto 0;
+        }
+
+        .glass-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 35px;
+        }
+
+        .glass-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            border: var(--glass-border);
+            position: relative;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-color: rgba(0, 0, 0, 0.2);
+        }
+
+        /* Image Container with Responsive Design */
+        .glass-img-container {
+            height: 250px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(45deg, #f9f9f9, #f0f0f0);
+            cursor: pointer;
+        }
+
+        .glass-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+            display: block;
+        }
+
+        .glass-card:hover .glass-img {
+            transform: scale(1.08);
+        }
+
+        /* Fallback for broken images */
+        .glass-img-fallback {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, #f9f9f9, #f0f0f0);
+            color: var(--medium-gray);
+            font-size: 1rem;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .glass-img-fallback i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-black);
+        }
+
+        .glass-price {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: var(--white);
+            color: var(--primary-black);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 1rem;
+            z-index: 2;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .glass-info {
+            padding: 25px;
+            text-align: center;
+        }
+
+        .glass-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            color: var(--primary-black);
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.4;
+        }
+
+        .glass-info p {
+            color: var(--medium-gray);
+            font-size: 1rem;
+            margin-bottom: 20px;
+            min-height: 60px;
+            line-height: 1.6;
+        }
+
+        .order-btn {
+            display: inline-block;
+            background: var(--primary-black);
+            color: var(--white);
+            padding: 14px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            width: 100%;
+            border: 2px solid var(--primary-black);
+            cursor: pointer;
+            letter-spacing: 0.5px;
+        }
+
+        .order-btn:hover {
+            background: transparent;
+            color: var(--primary-black);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* No Products Message */
+        .no-products {
+            text-align: center;
+            padding: 80px 40px;
+            background: var(--light-gray);
+            border-radius: var(--border-radius);
+            color: var(--medium-gray);
+            border: var(--glass-border);
+        }
+
+        .no-products i {
+            font-size: 3.5rem;
+            margin-bottom: 25px;
+            color: var(--primary-black);
+        }
+
+        .no-products h3 {
+            color: var(--primary-black);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--medium-gray);
+            font-size: 1.2rem;
+        }
+
+        .loading i {
+            font-size: 2.5rem;
+            margin-bottom: 25px;
+            color: var(--primary-black);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            padding: 20px;
+        }
+
+        .lightbox.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            width: auto;
+            height: auto;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            border: var(--glass-border);
+        }
+
+        .lightbox-img-container {
+            width: 100%;
+            max-height: 70vh;
+            overflow: hidden;
+            background: var(--light-gray);
+        }
+
+        .lightbox-img {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-height: 70vh;
+            object-fit: contain;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 45px;
+            height: 45px;
+            background: var(--primary-black);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+            z-index: 2001;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .lightbox-close:hover {
+            background: var(--dark-gray);
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        .lightbox-info {
+            padding: 30px;
+            background: var(--white);
+            text-align: center;
+        }
+
+        .lightbox-info h3 {
+            margin-bottom: 15px;
+            color: var(--primary-black);
+            font-size: 1.8rem;
+        }
+
+        .lightbox-info p {
+            color: var(--medium-gray);
+            margin-bottom: 25px;
+            line-height: 1.7;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .lightbox-price {
+            display: inline-block;
+            background: var(--primary-black);
+            color: var(--white);
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border: 2px solid var(--primary-black);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--primary-black);
+            color: var(--white);
+            padding: 80px 0 40px;
+            border-top: var(--glass-border);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 50px;
+            margin-bottom: 50px;
+        }
+
+        .footer-column h3 {
+            color: var(--white);
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .footer-column h3:after {
+            background: var(--white);
+            width: 50px;
+        }
+
+        .footer-column p, .footer-column a {
+            color: #ddd;
+            margin-bottom: 12px;
+            display: block;
+            text-decoration: none;
+            transition: var(--transition);
+            line-height: 1.7;
+        }
+
+        .footer-column a:hover {
+            color: var(--white);
+            padding-left: 8px;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+
+        .footer-contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .footer-contact-item i {
+            color: var(--white);
+            margin-top: 3px;
+            min-width: 20px;
+        }
+
+        /* Glass Categories Grid for Footer */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .category-grid a {
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .container {
+                max-width: 100%;
+                padding: 0 30px;
+            }
+            
+            .glass-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 30px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            h2 {
+                font-size: 2rem;
+            }
+            
+            .gallery-header h1 {
+                font-size: 3rem;
+            }
+            
+            .main-nav {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .glass-grid {
+                grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+                gap: 25px;
+            }
+            
+            .glass-img-container {
+                height: 230px;
+            }
+            
+            .category-section {
+                padding: 40px;
+            }
+            
+            .footer-content {
+                gap: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 15px 0;
+            }
+            
+            .gallery-header {
+                padding: 60px 0 40px;
+            }
+            
+            .gallery-header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .gallery-header p {
+                font-size: 1.1rem;
+                padding: 0 15px;
+            }
+            
+            .store-info {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                padding: 20px;
+            }
+            
+            .category-filter {
+                gap: 10px;
+                margin-top: 30px;
+            }
+            
+            .category-btn {
+                padding: 10px 22px;
+                font-size: 0.9rem;
+            }
+            
+            .glass-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 20px;
+            }
+            
+            .glass-img-container {
+                height: 200px;
+            }
+            
+            .category-section {
+                padding: 30px;
+            }
+            
+            .mobile-menu-content {
+                width: 85%;
+                max-width: 320px;
+            }
+            
+            .lightbox-content {
+                max-width: 95%;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .gallery-header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .glass-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .glass-img-container {
+                height: 180px;
+            }
+            
+            .logo-img {
+                height: 40px;
+            }
+            
+            .logo-text {
+                font-size: 1.5rem;
+            }
+            
+            .category-filter {
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 10px;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            
+            .category-filter::-webkit-scrollbar {
+                display: none;
+            }
+            
+            .category-btn {
+                flex-shrink: 0;
+                padding: 8px 18px;
+                font-size: 0.85rem;
+            }
+            
+            .category-section {
+                padding: 25px 20px;
+                margin-bottom: 60px;
+            }
+            
+            .mobile-menu-content {
+                width: 280px;
+            }
+            
+            .glass-info h3 {
+                font-size: 1.2rem;
+                min-height: 40px;
+            }
+            
+            .glass-info p {
+                font-size: 0.95rem;
+                min-height: 50px;
+            }
+            
+            .footer-content {
+                gap: 35px;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .glass-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .glass-img-container {
+                height: 220px;
+            }
+            
+            .category-btn {
+                padding: 8px 16px;
+                font-size: 0.8rem;
+            }
+            
+            .store-info {
+                padding: 15px;
+            }
+            
+            .container {
+                padding: 0 15px;
+            }
+        }
+        
+        /* Image Loading Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .glass-img.loaded {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        /* Lazy Loading */
+        .glass-img {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .glass-img.loaded {
+            opacity: 1;
+        }
+        
+        /* Glass Reflection Effect */
+        .glass-card:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.7s ease;
+        }
+        
+        .glass-card:hover:after {
+            left: 100%;
+        }
+        
+        /* Scroll to Top Button */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary-black);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            z-index: 999;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+            border: 2px solid var(--white);
+        }
+        
+        .scroll-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .scroll-top:hover {
+            transform: translateY(-5px);
+            background: var(--dark-gray);
+        }
+    </style>
+</head>
+<body>
+    <!-- Scroll to Top Button -->
+    <div class="scroll-top" id="scroll-top">
+        <i class="fas fa-chevron-up"></i>
+    </div>
+
+    <!-- Header with Navigation -->
+    <header>
+        <div class="container header-container">
+            <div class="logo-container">
+                <img src="glass.png" alt="Royal Glasses Logo" class="logo-img">
+                <div class="logo-text">ROYAL <span>GLASSES</span></div>
+            </div>
+            
+            <!-- Desktop Navigation -->
+            <ul class="main-nav">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="gallery.html" class="active">Gallery</a></li>
+               
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" id="mobile-menu-open">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
+
+    <!-- Mobile Menu Content -->
+    <div class="mobile-menu-content" id="mobile-menu-content">
+        <button class="mobile-menu-close" id="mobile-menu-close">
+            <i class="fas fa-times"></i>
+        </button>
+        <ul class="mobile-nav">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid var(--light-gray);">
+            <div class="footer-contact-item">
+                <i class="fas fa-phone"></i>
+                <span>0753 224 677</span>
+            </div>
+            <div class="footer-contact-item">
+                <i class="fas fa-phone"></i>
+                <span>0746 312 842</span>
+            </div>
+            <div class="footer-contact-item">
+                <i class="fas fa-envelope"></i>
+                <span>royalglasses41@gmail.com</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gallery Header -->
+    <section class="gallery-header"> 
+        <div class="container">
+            <h1>Premium Glass Collection</h1>
+            <p>Discover our exquisite range of glass products for residential, commercial, and industrial applications. Each piece is crafted with precision and quality.</p>
+            
+            <div class="store-info">
+                <div class="info-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>royalglasses41@gmail.com</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>tzynhassans41@gmail.com</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-phone"></i>
+                    <span>0753 224 677</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-phone"></i>
+                    <span>0746 312 842</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Mon-Sat: 8:00 AM - 7:00 PM</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Kampala, Uganda</span>
+                </div>
+            </div>
+            
+            <div class="category-filter">
+                <a href="#Clear Glass" class="category-btn">Clear Glass</a>
+                <a href="#Frosted Glass" class="category-btn">Frosted Glass</a>
+                <a href="#Tinted Glass" class="category-btn">Tinted Glass</a>
+                <a href="#Laminated Glass" class="category-btn">Laminated</a>
+                <a href="#Tempered (Toughened) Glass" class="category-btn">Tempered</a>
+                <a href="#Reflective Glass" class="category-btn">Reflective</a>
+                <a href="#Patterned / Decorative Glass" class="category-btn">Patterned</a>
+                <a href="#Window Glass" class="category-btn">Windows</a>
+                <a href="#Door Glass" class="category-btn">Doors</a>
+                <a href="#Shower Glass" class="category-btn">Shower</a>
+                <a href="#Glass Partitions" class="category-btn">Partitions</a>
+                <a href="#Mirrors" class="category-btn">Mirrors</a>
+                <a href="#Tabletop Glass" class="category-btn">Tabletop</a>
+                <a href="#Aluminium & Glass Systems" class="category-btn">Aluminium Systems</a>
+                <a href="#Custom Glass Orders" class="category-btn">Custom Orders</a>
+                <a href="#other" class="category-btn">Other</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Content -->
+    <section class="gallery-categories">
+        <div class="container">
+            <div id="categories-container">
+                <div class="loading" id="loading-state">
+                    <i class="fas fa-spinner"></i>
+                    <p>Loading glass products from database...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <button class="lightbox-close" id="lightbox-close">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="lightbox-img-container">
+                <img id="lightbox-img" src="" alt="" class="lightbox-img">
+            </div>
+            <div class="lightbox-info">
+                <h3 id="lightbox-title"></h3>
+                <p id="lightbox-description"></p>
+                <div class="lightbox-price" id="lightbox-price"></div>
+                <a href="contact.html" class="order-btn">Inquire Now</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Royal Glasses</h3>
+                    <p>Premium glass solutions for residential, commercial, and industrial applications. We specialize in custom glass fabrication, installation, and repair services with over 15 years of experience.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <a href="index.html">Home</a>
+                    <a href="gallery.html">Glass Gallery</a>
+              
+                    <a href="contact.html">Contact Us</a>
+                    <a href="#services">Our Services</a>
+                </div>
+                <div class="footer-column">
+                    <h3>Glass Categories</h3>
+                    <div class="category-grid">
+                        <a href="#Clear Glass">Clear Glass</a>
+                        <a href="#Frosted Glass">Frosted Glass</a>
+                        <a href="#Tinted Glass">Tinted Glass</a>
+                        <a href="#Laminated Glass">Laminated Glass</a>
+                        <a href="#Tempered (Toughened) Glass">Tempered Glass</a>
+                        <a href="#Reflective Glass">Reflective Glass</a>
+                        <a href="#Patterned / Decorative Glass">Patterned Glass</a>
+                        <a href="#Window Glass">Window Glass</a>
+                        <a href="#Door Glass">Door Glass</a>
+                        <a href="#Shower Glass">Shower Glass</a>
+                        <a href="#Glass Partitions">Glass Partitions</a>
+                        <a href="#Mirrors">Mirrors</a>
+                        <a href="#Tabletop Glass">Tabletop Glass</a>
+                        <a href="#Aluminium & Glass Systems">Aluminium Systems</a>
+                        <a href="#Custom Glass Orders">Custom Orders</a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Info</h3>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Kampala, Uganda</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>0753 224 677</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>0746 312 842</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>royalglasses41@gmail.com</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>tzynhassans41@gmail.com</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Mon-Sat: 8:00 AM - 7:00 PM</span>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 Royal Glasses. All rights reserved. | Premium Glass Solutions</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu functionality
+        const mobileMenuOpen = document.getElementById('mobile-menu-open');
+        const mobileMenuClose = document.getElementById('mobile-menu-close');
+        const mobileMenuContent = document.getElementById('mobile-menu-content');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+        
+        // Open mobile menu
+        mobileMenuOpen.addEventListener('click', function() {
+            mobileMenuContent.classList.add('active');
+            mobileMenuOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        
+        // Close mobile menu
+        function closeMobileMenu() {
+            mobileMenuContent.classList.remove('active');
+            mobileMenuOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        mobileMenuClose.addEventListener('click', closeMobileMenu);
+        mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+        
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.mobile-nav a').forEach(link => {
+            link.addEventListener('click', closeMobileMenu);
+        });
+        
+        // Close mobile menu on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeMobileMenu();
+            }
+        });
+
+        // Smooth scrolling for category buttons
+        document.querySelectorAll('.category-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                
+                if (targetSection) {
+                    window.scrollTo({
+                        top: targetSection.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Lightbox functionality
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const lightboxTitle = document.getElementById('lightbox-title');
+        const lightboxDescription = document.getElementById('lightbox-description');
+        const lightboxPrice = document.getElementById('lightbox-price');
+        const lightboxClose = document.getElementById('lightbox-close');
+
+        function openLightbox(product) {
+            lightboxImg.src = product.image;
+            lightboxImg.alt = product.title;
+            lightboxTitle.textContent = product.title;
+            lightboxDescription.textContent = product.description;
+            lightboxPrice.textContent = product.price;
+            
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close lightbox when clicking close button or outside
+        lightboxClose.addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', function(e) {
+            if (e.target === lightbox) {
+                closeLightbox();
+            }
+        });
+
+        // Close lightbox with escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+                closeLightbox();
+            }
+        });
+
+        // Image lazy loading
+        function lazyLoadImages() {
+            const images = document.querySelectorAll('.glass-img');
+            
+            images.forEach(img => {
+                if (img.classList.contains('loaded')) return;
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            img.src = img.dataset.src;
+                            img.onload = () => {
+                                img.classList.add('loaded');
+                            };
+                            img.onerror = () => {
+                                // If image fails to load, show fallback
+                                const container = img.closest('.glass-img-container');
+                                const fallback = document.createElement('div');
+                                fallback.className = 'glass-img-fallback';
+                                fallback.innerHTML = `
+                                    <div>
+                                        <i class="fas fa-glass-whiskey"></i>
+                                        <p>${img.alt || 'Glass Product'}</p>
+                                    </div>
+                                `;
+                                container.innerHTML = '';
+                                container.appendChild(fallback);
+                            };
+                            observer.unobserve(img);
+                        }
+                    });
+                });
+                
+                observer.observe(img);
+            });
+        }
+
+        // Scroll to top functionality
+        const scrollTopBtn = document.getElementById('scroll-top');
+        
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+        
+        scrollTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Glass categories
+        const glassCategories = [
+            "Clear Glass",
+            "Frosted Glass",
+            "Tinted Glass",
+            "Laminated Glass",
+            "Tempered (Toughened) Glass",
+            "Reflective Glass",
+            "Patterned / Decorative Glass",
+            "Window Glass",
+            "Door Glass",
+            "Shower Glass",
+            "Glass Partitions",
+            "Mirrors",
+            "Tabletop Glass",
+            "Aluminium & Glass Systems",
+            "Custom Glass Orders",
+            "other"
+        ];
+
+        // Firebase Data Management
+        async function loadProductsFromFirebase() {
+            const db = window.firebaseDB;
+            const { collection, query, orderBy, onSnapshot } = window.firebaseModules;
+            
+            try {
+                // Create a query that sorts by creation time
+                const q = query(collection(db, "glass_products"), orderBy("createdAt", "desc"));
+                
+                // Set up real-time listener
+                onSnapshot(q, (snapshot) => {
+                    // Hide loading state
+                    const loadingState = document.getElementById('loading-state');
+                    if (loadingState) loadingState.style.display = 'none';
+                    
+                    // Clear the gallery container
+                    const container = document.getElementById('categories-container');
+                    container.innerHTML = '';
+                    
+                    if (snapshot.empty) {
+                        container.innerHTML = `
+                            <div class="no-products">
+                                <i class="fas fa-glass-whiskey"></i>
+                                <h3>No Glass Products Available</h3>
+                                <p>.</p>
+                                <a href="" style="display: inline-block; margin-top: 20px; padding: 12px 30px; background: var(--primary-black); color: white; border-radius: 30px; text-decoration: none; font-weight: 600;">Add Products via Admin</a>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    // Group products by category
+                    const productsByCategory = {};
+                    glassCategories.forEach(category => {
+                        productsByCategory[category] = [];
+                    });
+                    
+                    snapshot.forEach((doc) => {
+                        const product = doc.data();
+                        product.id = doc.id;
+                        
+                        // Ensure category exists, default to "other" if not
+                        const category = product.category || "other";
+                        if (productsByCategory[category]) {
+                            productsByCategory[category].push(product);
+                        } else {
+                            productsByCategory["other"].push(product);
+                        }
+                    });
+                    
+                    // Render each category that has products
+                    Object.keys(productsByCategory).forEach(category => {
+                        const products = productsByCategory[category];
+                        
+                        if (products.length === 0) return;
+                        
+                        const categorySection = document.createElement('div');
+                        categorySection.className = 'category-section';
+                        categorySection.id = category.replace(/[\/\s&]+/g, '-').replace(/[()]/g, '');
+                        
+                        const categoryHeader = document.createElement('div');
+                        categoryHeader.className = 'category-header';
+                        categoryHeader.innerHTML = `
+                            <h2>${category}</h2>
+                            <p>${getCategoryDescription(category)}</p>
+                        `;
+                        
+                        const glassGrid = document.createElement('div');
+                        glassGrid.className = 'glass-grid';
+                        
+                        // Add products to the grid
+                        products.forEach(product => {
+                            const glassCard = document.createElement('div');
+                            glassCard.className = 'glass-card';
+                            glassCard.innerHTML = `
+                                <div class="glass-img-container">
+                                    <img data-src="${product.image}" alt="${product.title}" class="glass-img">
+                                    <div class="glass-price">${product.price || "Price on request"}</div>
+                                </div>
+                                <div class="glass-info">
+                                    <h3>${product.title}</h3>
+                                    <p>${product.description || "Premium quality glass product"}</p>
+                                    <a href="contact.html" class="order-btn">Inquire Now</a>
+                                </div>
+                            `;
+                            
+                            glassGrid.appendChild(glassCard);
+                        });
+                        
+                        categorySection.appendChild(categoryHeader);
+                        categorySection.appendChild(glassGrid);
+                        container.appendChild(categorySection);
+                    });
+                    
+                    // Initialize lazy loading for images
+                    setTimeout(lazyLoadImages, 100);
+                    
+                    // Add event listeners to product images
+                    addProductImageListeners(snapshot);
+                    
+                    // Initialize category scrolling highlighting
+                    initializeCategoryScrolling();
+                });
+                
+            } catch (error) {
+                console.error("Error loading products:", error);
+                const container = document.getElementById('categories-container');
+                container.innerHTML = `
+                    <div class="no-products">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Error Loading Products</h3>
+                        <p>Unable to load products from the database. Please try again later.</p>
+                        <p style="font-size: 0.9rem; margin-top: 10px;">Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Get category description
+        function getCategoryDescription(category) {
+            const descriptions = {
+                "Clear Glass": "Perfect clarity and transparency for windows, doors, and display cases.",
+                "Frosted Glass": "Privacy glass with an elegant etched finish for bathrooms and office partitions.",
+                "Tinted Glass": "Heat and glare reduction with stylish color options for windows and facades.",
+                "Laminated Glass": "Safety glass with interlayer for security, sound reduction, and UV protection.",
+                "Tempered (Toughened) Glass": "Heat-treated safety glass that breaks into small granular pieces.",
+                "Reflective Glass": "Mirror-like exterior appearance with solar control properties.",
+                "Patterned / Decorative Glass": "Textured and decorative glass for aesthetic applications.",
+                "Window Glass": "Various glass types specifically designed for window installations.",
+                "Door Glass": "Tempered and laminated safety glass for interior and exterior doors.",
+                "Shower Glass": "Tempered glass enclosures and doors for bathrooms.",
+                "Glass Partitions": "Office partitions, room dividers, and glass walls.",
+                "Mirrors": "Various mirror types for bathrooms, bedrooms, and decorative purposes.",
+                "Tabletop Glass": "Tempered glass for tables, shelves, and countertops.",
+                "Aluminium & Glass Systems": "Complete glazing systems with aluminium framing.",
+                "Custom Glass Orders": "Custom-cut, shaped, and processed glass to your specifications.",
+                "other": "Specialized glass products and unique applications."
+            };
+            return descriptions[category] || "Browse our collection of premium glass products.";
+        }
+
+        // Add event listeners to product images for lightbox
+        function addProductImageListeners(snapshot) {
+            document.querySelectorAll('.glass-img-container').forEach((container, index) => {
+                container.addEventListener('click', function() {
+                    const glassCard = this.closest('.glass-card');
+                    const productTitle = glassCard.querySelector('h3').textContent;
+                    
+                    // Find the product in the snapshot
+                    let product = null;
+                    snapshot.forEach((doc) => {
+                        if (doc.data().title === productTitle) {
+                            product = doc.data();
+                            product.id = doc.id;
+                        }
+                    });
+                    
+                    if (product) {
+                        openLightbox(product);
+                    }
+                });
+                
+                // Also make the whole card clickable for better UX
+                container.closest('.glass-card').addEventListener('click', function(e) {
+                    if (!e.target.classList.contains('order-btn')) {
+                        const productTitle = this.querySelector('h3').textContent;
+                        
+                        // Find the product in the snapshot
+                        let product = null;
+                        snapshot.forEach((doc) => {
+                            if (doc.data().title === productTitle) {
+                                product = doc.data();
+                                product.id = doc.id;
+                            }
+                        });
+                        
+                        if (product) {
+                            openLightbox(product);
+                        }
+                    }
+                });
+            });
+        }
+
+        // Initialize category scrolling highlighting
+        function initializeCategoryScrolling() {
+            const sections = document.querySelectorAll('.category-section');
+            const navButtons = document.querySelectorAll('.category-btn');
+            
+            if (sections.length === 0) return;
+            
+            window.addEventListener('scroll', function() {
+                let currentSection = '';
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - 100;
+                    const sectionHeight = section.clientHeight;
+                    
+                    if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
+                        currentSection = '#' + section.getAttribute('id');
+                    }
+                });
+                
+                navButtons.forEach(button => {
+                    button.classList.remove('active');
+                    if (button.getAttribute('href') === currentSection) {
+                        button.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        // Initialize the page when Firebase is loaded
+        function init() {
+            // Check if Firebase is loaded
+            if (window.firebaseDB && window.firebaseModules) {
+                loadProductsFromFirebase();
+            } else {
+                // Wait a bit and try again
+                setTimeout(init, 500);
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
